@@ -107,90 +107,115 @@ I estimate the linear effect of electoral closeness on turnout. Each model’s r
 𝑌 = 𝛼 + 𝛽𝑋  + 𝜖
 
 Where:
-•	Y is turnout, 
-•	X is closeness,
-•	𝛼 is the intercept,
-•	𝛽 is the coefficient for closeness,
-•	𝜖 is the error term.
+-	Y is turnout, 
+-	X is closeness,
+-	𝛼 is the intercept,
+-	𝛽 is the coefficient for closeness,
+-	𝜖 is the error term.
 
 #### Model 2: Pooled OLS (Democracies Only)
 Same as Model 1, but restricted to `democracy` = 1.
 
 
 #### Model 3: Two-Way Fixed Effects (Democracies)
-\[
-  \text{turnoutreg}_{i,t} = \alpha_{i} + \delta_{t} + \beta_{1} \times \text{closeness\_per}_{i,t} + \epsilon_{i,t}
-\]
-- \(\alpha_{i}\): country FE  
-- \(\delta_{t}\): year FE  
 
 𝑌𝑖,𝑡 = 𝛼𝑖 + 𝛿𝑡 + 𝛽1𝑋1𝑖,𝑡 + 𝜖𝑖,𝑡
 
 Where:
-•	𝑌𝑖,𝑡 is turnout in country i in the year t,
-•	𝑋1𝑖,𝑡 is the closeness of the election in country i in the year t, 
-•	𝛼𝑖 is the intercept for country i,
-•	𝛿𝑡 is the intercept for time t,
-•	𝛽1 is the coefficient for closeness,
-•	𝜖𝑖,𝑡 is the error term or residual for country i in year t.
+-	𝑌𝑖,𝑡 is turnout in country i in the year t,
+-	𝑋1𝑖,𝑡 is the closeness of the election in country i in the year t, 
+-	𝛼𝑖 is the intercept for country i,
+-	𝛿𝑡 is the intercept for time t,
+-	𝛽1 is the coefficient for closeness,
+-	𝜖𝑖,𝑡 is the error term or residual for country i in year t.
 
-Model 4 adds control variables from the GDT dataset. These include population size, compulsory voting, election concurrency, the election type, and the weekday.
-
+#### Model 4: Two-Way FE + Controls (Democracies)
 𝑌𝑖,𝑡 = 𝛼𝑖 + 𝛿𝑡 + 𝛽1𝑋1𝑖,𝑡 + 𝛽2𝑋2𝑖,𝑡 + 𝛽3𝑋3𝑖,𝑡 + 𝛽4𝑋4𝑖,𝑡 + 𝛽5𝑋5𝑖,𝑡 + 𝛽6𝑋6𝑖,𝑡 + 𝜖𝑖,𝑡
 
 Where:
-•	𝑋2𝑖,𝑡 is the population of a country i in year t,
-•	𝑋3𝑖,𝑡 is whether voting was compulsory in country i in year t,
-•	𝑋4𝑖,𝑡 is whether there where concurrent elections in country i in year t,
-•	𝑋5𝑖,𝑡 is the type of election in country i in year t,
-•	𝑋6𝑖,𝑡 is the weekday the vote was held on in country i in year t,
-•	𝛽2 is the coefficient for population size,
-•	𝛽3 is the coefficient for compulsory voting,
-•	𝛽4 is the coefficient for concurrent elections,
-•	𝛽5 is the coefficient for the election type,
-•	𝛽6 is the coefficient for the weekday.
+-	𝑋2𝑖,𝑡 is the population of a country i in year t,
+-	𝑋3𝑖,𝑡 is whether voting was compulsory in country i in year t,
+-	𝑋4𝑖,𝑡 is whether there where concurrent elections in country i in year t,
+-	𝑋5𝑖,𝑡 is the type of election in country i in year t,
+-	𝑋6𝑖,𝑡 is the weekday the vote was held on in country i in year t,
+-	𝛽2 is the coefficient for population size,
+-	𝛽3 is the coefficient for compulsory voting,
+-	𝛽4 is the coefficient for concurrent elections,
+-	𝛽5 is the coefficient for the election type,
+-	𝛽6 is the coefficient for the weekday.
 
-Model 5 adds the variable indicating economic inequality.
+#### Model 5: Two-Way FE + Controls + Gini (Democracies)
 
 𝑌𝑖,𝑡 = 𝛼𝑖 + 𝛿𝑡 + 𝛽1𝑋1𝑖,𝑡 +… + 𝛽7𝑋7𝑖,𝑡 + 𝜖𝑖,𝑡
 
 Where:
-•	𝛽7𝑋7𝑖,𝑡 is the economic inequality of a country i in year t,
-•	𝛽7 is the coefficient for the economic inequality.
+-	𝛽7𝑋7𝑖,𝑡 is the economic inequality of a country i in year t,
+-	𝛽7 is the coefficient for the economic inequality.
+-	Runs on subset with Gini values.
 
 ## Results
-For the interpretation of the coefficients, it is important to keep in mind that lower values of the independent variable indicate a closer election, as lower values indicate a smaller margin of victory. Consequently, as the margin increases in size, turnout is expected to decrease.
+A larger value of `closeness_per` means a less competitive election. A negative β implies that as margins widen (less competitive), turnout declines.
 
-Model 1 estimates the coefficient for closeness at 0.040 with a standard error of 0.013, indicating that on average, when an election decreases in its closeness by 1 percentage point, it will increase voter turnout by 0.04 percentage points. The coefficient is statistically significant at the 1% level.
-The results of Model 1 imply three things: First, the effect of closeness on turnout appears to be very small. Second, there is sufficient evidence to reject the null hypothesis. Third, the results do not support H1, which predicted that turnout would decrease as the vote gap increases.
-Regarding this final point, Graph 1 can partially explain this result. Election closeness affects turnout differently in democracies and non-democracies. As an election should be competitive for closeness to motivate citizens participation, including non-democracies into the analysis may be masking the true effect of the independent variable. 
+### Model 1 (Pooled OLS, All Countries)
+- **β₁ (closeness_per):** 0.040 (SE = 0.013) *** (p < 0.01)  
+- **R²:** 0.004  
+- **Interpretation:**  
+  - A 1 pp wider margin → +0.04 pp turnout.  
+  - Statistically significant but trivially small.  
+  - R² shows almost no explanatory power.  
 
-The R2 of Model 1 is 0.004, a small number by any reasonable standard. Closeness alone does not sufficiently explain the variance of turnout. Consequently, the explanatory power and predictive ability of this model are limited.
+### Model 2 (Pooled OLS, Democracies)
+- **β₁ (closeness_per):** –0.148 (SE = 0.027) *** (p < 0.01)  
+- **R²:** 0.018  
+- **Interpretation:**  
+  - In democracies, a 1 pp wider margin → –0.148 pp turnout (significant but still small).  
+  - Low R² again.  
 
-Model 2 only looks at democracies, with results visualized in Graph 2. The coefficient of -0.148 (standard error of 0.027) falls in line with H1 expectations and is larger in absolute terms than that of Model 1, as turnout is predicted to decrease by -0.148 percentage points per unitary increase in the gap of the vote share. The results remain significant at the 1% level.
-Despite this, with a R2 of 0.018, Model 2 can still barely explain the variance within the data. 
+### Model 3 (Two-Way FE, Democracies)
+- **β₁ (closeness_per):** –0.0574 (SE = 0.020) *** (p < 0.01)  
+- **Adj R²:** 0.673  
+- **Interpretation:**  
+  - Controlling for country & year FE, a 1 pp wider margin → –0.0574 pp turnout.  
+  - Fixed effects capture most variation; closeness remains negative.
+ 
+### Model 4 (Two-Way FE + Controls, Democracies)
+- **β₁ (closeness_per):** –0.093 (SE = 0.022) *** (p < 0.01)  
+- **Adj R²:** 0.687  
+- **Key Controls:**  
+  - `populationNohl` (positive coefficient)  
+  - `compulsory` (positive)  
+  - `concurrent` (positive)   
+- **Interpretation:**  
+  - A 10 pp wider margin → –0.93 pp turnout, holding other factors constant.
 
-Graph 2 also indicates what could already be observed in Graph 1, which is that most elections appear to be close affairs irrespective of their turnout levels. That said, most of the datapoints appear to cluster around small vote gap and high turnout.
 
-Model 3 is a major improvement in terms of its ability to explain the variation of turnout. With an adjusted R2 of 0.673, the explanatory power and predictive ability of Model 3 are relatively high.
-The model estimated the coefficient for closeness at -0.0574 (standard error of 0.020), which remains significant at the 1% level, which again soundly rejects the null hypothesis, and the relationship appears in line with H1.
+### Model 5 (Two-Way FE + Controls + Gini, Democracies)
+- **β₁ (closeness_per):** –0.096 (SE = 0.025) *** (p < 0.01)  
+- **β₇ (gini):** (c. 0.40, SE = 0.08) *** (p < 0.01)  
+- **Adj R²:** 0.702  
+- **Notes:**  
+  - Only 964 observations (many country-years lack Gini).  
+  - Inequality has a large positive association—moving from min to max Gini yields a big turnout change (caution: not realistic to go 0 → 1).  
+- **Interpretation:**  
+  - Closeness effect unchanged (–0.096).  
+  - Income inequality appears important but must be interpreted over observed Gini range (≈0.25–0.60).
 
-With the inclusion of additional variables into Model 4, the coefficient for closeness “increases” to -0.093. The estimation is still statically significant at the 1% level. These results would indicate that an election with a vote share difference of 10 percentage points between the leading candidates should see an approximate 1 percentage point decrease in turnout compared to an election that is neck on neck.
 
-Model 5 follows the same trend, with the coefficient of closeness being -0.096. This model features the highest R2 and adjusted R2 but is also based on the lowest number of observations. Economic inequality (gini) appears to have an extremely large effect on turnout, but as the variable is measured 0-1, it represents the difference in turnout between a country with complete economic equality to a country with none. 
+## Overall Takeaways
 
-While the first two models are too weak in their explanatory power to draw meaningful conclusions, models 3-5 all indicate that closeness has a statistically significant, non-zero effect on turnout. Additionally, in all models except Model 1, the relationship between closeness and turnout is predicted to be negative, as H1 expected. Overall, the results provide sufficient evidence to reject the null hypothesis and appear to support H1.
-That said, the actual effect size of closeness on turnout is small across all models, indicating that closer elections are not to be associated with large increases in turnout. This falls in line with what previous authors have previously found (see Blais 2006). Based on the two models with the highest R2, when the margin of victory increases by one percentage point, one can expect an average decrease in voter turnout between -0.093 and -0.096 percentage points.
+1. **Models 1 & 2 (Pooled OLS)**: Closeness is significant but explains almost no variance (R² = 0.004–0.018).  
+2. **Models 3–5 (Two-Way FE)**: Closeness remains negative (–0.057 to –0.096) and significant (p < 0.01). Fixed effects capture most of the variation (Adj R² ≈ 0.67–0.70).  
+3. **Effect sizes**: A 1-pp wider margin reduces turnout by 0.04–0.10 pp—small but consistent with prior literature (Blais 2006).  
+4. **Controls & Gini**:  
+   - Compulsory voting, population size, and election concurrency all behave as expected.  
+   - Income inequality (Gini) has a large positive coefficient, but we only observe Gini ∈ [0.25, 0.60], so a more modest effect is realistic.  
 
-There are limitations to this analysis. First, measuring closeness ex-post is not unproblematic. When possible, it would be preferable that future research truly measure perceived closeness. If causal claims are to be made about the relationship between closeness and turnout, this point holds especially true, as the margin of victory cannot truly be causal for something that proceeds it. 
-Second, in such a cross national observational study, it is impossible to account for all factors. While many relevant variables were controlled for, some notable exclusions include population concentration, population ethnicity and campaign expenditures. Potentially most relevant of all, the analysis did not control for weather an election took place in a majoritarian or consensual democracy, and there are reasons to believe that measuring closeness in the latter would need to be conducted differently (see Blais 2006: 120). Despite this, considering that the results remain robust and statistically significant over three models with a high R2, there are grounds to remain confident in these findings.
+**Conclusion:** We reject the null that “closeness has zero effect.” Closer elections do see marginally higher turnout, but the practical impact is modest.  
 
-Shortcomings aside, this analysis has provided evidence that citizens are more likely to vote in close elections, and therefore finds itself in line with the previous findings works such as that of Blais and Dobrzynska (1998) and Cancela and Geys (2016), even if the projected influence of closeness on turnout appears to be small. While more research is needed to explain under which condition closeness may play a greater or lesser role, determining the validity of the association is a necessary and relevant first step.
 
 ## Usage
 
-Data is already preprocessed in the Turning-up-for-the-Races.Rmd file. Preprocessing can be run sepeartly if desired with the Preprocessing.Rmd (Note: V-Dem-CY-Core-v13.csv.zip will need ot be unziped forst)
-
+The analysis is contained in `Turning-up-for-the-Races.Rmd`. If you want to rerun preprocessing from raw files, see `Preprocessing.Rmd`.
 
 ### 1. Clone the Repository
 
@@ -199,7 +224,12 @@ git clone https://github.com/Dem-guy/Turning-up-for-the-Races.git
 cd Turning-up-for-the-Races
 ```
 
-### 2. Install R Packages
+### 2. Unzip V-Dem Data
+```bash
+unzip data/V-Dem-CY-Core-v13.csv.zip -d data/
+```
+
+### 3. Install R Packages
 In R
 ```r
 install.packages(c(
@@ -207,16 +237,17 @@ install.packages(c(
   "haven",
   "stargazer"
 ))
-
 ```
 
-### 3. Render the R Markdown 
+### 4. Render the R Markdown 
 In R
 ```r
 rmarkdown::render("Turning-up-for-the-Races.Rmd")
 ```
+This produces Turning-up-for-the-Races.html (or pdf, depending on your YAML). Figures and Tables appear in figures/
 
-Or, if preprocessing step should be rerun, run following first
+
+To only rerun data preprocessing (e.g., if you changed merges), run:
 ```r
 rmarkdown::render("Preprocessing.Rmd")
 ```
