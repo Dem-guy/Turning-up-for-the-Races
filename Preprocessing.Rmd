@@ -1,0 +1,122 @@
+---
+title: "Turning up for the Races: An Exploration of the Relationship between Close Elections and Voter Turnout"
+subtitle: "R Markdown and Replication File - Preprocessing"
+author: "18-777-581"
+output:
+  pdf_document: default
+  html_document: default
+date: "Date of submission: 31-01-2024"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## Loading Packages
+```{r, message=FALSE}
+
+#Necessary packages
+library(tidyverse)
+library(haven)
+library(stargazer)
+
+```
+
+
+## Loading in original Data
+```{r, message=FALSE}
+
+# Global Data on Turnout (GDT)
+gdt <- read_dta("Raw Data/PUBLIC_GD-Turnout.dta")
+
+# Gini-Coefficient (Gini)
+gini <- read_csv("Raw Data/inequality.csv")
+
+# V-dem
+dem <- read_csv("Raw Data/V-Dem-CY-Core-v13.csv")
+```
+
+
+## Preparing and cleaning data original Datasets
+```{r}
+
+#Global Data on Turnout
+
+gdt_clean <- gdt %>% 
+  filter(numvoteparty1 - numvoteparty2 >= 0,
+         p1per - p2per >= 0) %>% 
+  mutate(closeness = numvoteparty1 - numvoteparty2,
+         closeness_per = p1per - p2per) %>%
+  select(country, year, turnoutreg, closeness, closeness_per,
+         weekday, streltype, compulsory, populationNohl, concurrent)
+
+gdt_clean$country[gdt_clean$country == "Congo Democratic Republic of"] <- "Democratic Republic of the Congo"
+gdt_clean$country[gdt_clean$country == "Republic of The Congo (Brazzaville)"] <- "Republic of the Congo"
+gdt_clean$country[gdt_clean$country == "Republic of The Congo"] <- "Republic of the Congo"
+gdt_clean$country[gdt_clean$country == "Tanzania United Republic of"] <- "Tanzania"
+gdt_clean$country[gdt_clean$country == "Russian Federation"] <- "Russia"
+gdt_clean$country[gdt_clean$country == "Moldova Republic of"] <- "Moldova"
+gdt_clean$country[gdt_clean$country == "Macedonia former Yugoslav Republic (1993-)"] <- "North Macedonia"
+gdt_clean$country[gdt_clean$country == "Korea Republic of"] <- "South Korea"
+gdt_clean$country[gdt_clean$country == "Iran Islamic Republic of"] <- "Iran"
+
+
+# Gini-Coefficient
+
+gini_step <- gini %>% 
+  select(Country, Year, 
+         "Gini coefficient (before tax) (World Inequality Database)") %>% 
+  rename("country" = Country,
+         "year" = Year,
+         "gini" = "Gini coefficient (before tax) (World Inequality Database)") %>% 
+  filter(year >= 1945,
+         year <= 2020)
+gini_clean <- na.omit(gini_step)
+gini_clean$country[gini_clean$country == "Czechia" & gini_clean$year < "1993"] <- "Czechoslovakia"
+gini_clean$country[gini_clean$country == "Czechia" & gini_clean$year >= "1993"] <- "Czech Republic"
+
+
+## V-dem
+
+## Binary Indicator
+dem_binary_step <- dem %>% 
+  select(country_name, year, v2x_polyarchy) %>% 
+  filter(year >= 1945,
+         year <= 2020) %>% 
+  mutate("democracy" = v2x_polyarchy >= 0.5) %>% 
+  rename("country" = country_name)
+
+dem_binary <- na.omit(dem_binary_step)
+dem_binary$country[dem_binary$country == "United States of America"] <- "United States"
+dem_binary$country[dem_binary$country == "Ivory Coast"] <- "Cote d'Ivoire"
+dem_binary$country[dem_binary$country == "Burma/Myanmar"] <- "Myanmar"
+dem_binary$country[dem_binary$country == "Czechia" & dem_binary$year < "1993"] <- "Czechoslovakia"
+dem_binary$country[dem_binary$country == "Czechia" & dem_binary$year >= "1993"] <- "Czech Republic"
+
+```
+
+
+## Combining original Datasets
+```{r}
+# GDT + V-Dem
+merged_authdem <- full_join(gdt_clean, dem_binary, by = c("country", "year"))
+authdem <- subset(merged_authdem, !is.na(closeness) & !is.na(v2x_polyarchy))
+
+
+# GDT + V-Dem + Gini
+
+merged_gini_stepa <- full_join(authdem, gini_clean, by = c("country", "year"))
+merged_gini_step2a <- subset(merged_gini_stepa, !is.na(closeness))
+merged_ginia <- subset(merged_gini_step2a, !is.na(gini))
+
+```
+
+## Write CSV's
+```{r}
+
+write_csv(authdem, "final_dem.csv")
+write_csv(merged_ginia, "final_gini.csv")
+
+```
+
