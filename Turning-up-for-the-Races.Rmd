@@ -20,10 +20,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Loading prepared Datasets
 ```{r}
 
-final_dem <- read_csv("final_dem.csv")
+final_dem <- read_csv("Cleaned Data/final_dem.csv")
 final_dem
 
-final_gini <- read_csv("final_gini.csv")
+final_gini <- read_csv("Cleaned Data/final_gini.csv")
 final_gini
 
 ```
