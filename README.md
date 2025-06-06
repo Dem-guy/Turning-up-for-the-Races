@@ -2,7 +2,7 @@
 A final data-analysis project for the ETH Methods II course. This analysis uses (fixed-effects) regression to estimate the relationship between electoral closeness and voter turnout.
 
 ## Motivation
-Understanding voter turnout is a cornerstone of political science. Scholars have long debated why people decide to vote, and whether institutional or contextual factors—like compulsory voting, election timing, or media access—affect participation.
+Understanding voter turnout is a cornerstone of political science. Scholars have long debated why people decide to vote, and whether institutional or contextual factors, like compulsory voting, election timing, or media access, affect participation.
 
 A frequently studied influence is **electoral closeness**: do citizens turn out in larger numbers when an election is expected to be competitive? While many case studies examine this question, empirical findings remain mixed. Using the new Global Dataset on Turnout, this project asks whether ex-post measures of electoral closeness (victory‐margin) predict higher turnout, thereby contributing to the ongoing debate on whether “closeness” genuinely motivates voters.
 
