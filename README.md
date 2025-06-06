@@ -244,13 +244,12 @@ In R
 ```r
 rmarkdown::render("Turning-up-for-the-Races.Rmd")
 ```
-This produces Turning-up-for-the-Races.html (or pdf, depending on your YAML). Figures and Tables appear in figures/
-
 
 To only rerun data preprocessing (e.g., if you changed merges), run:
 ```r
 rmarkdown::render("Preprocessing.Rmd")
 ```
+This generates the cleaned merged datasets which Turning-up-for-the-Races.Rmd works with.
 
 ## References
 Fauvelle-Aymar, C., & François, A. (2006). The impact of closeness on turnout: An empirical relation based on a study of a two-round ballot. Public Choice, 127, 461–483.
