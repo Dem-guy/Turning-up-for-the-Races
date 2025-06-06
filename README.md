@@ -1,90 +1,109 @@
 # Turning up for the Races
-A final data analysis project for ETH course Methods II. This analysis uses logistic regression to estaimate the realtionship between how close an election is and voter turnout.
+A final data-analysis project for the ETH Methods II course. This analysis uses (fixed-effects) regression to estimate the relationship between electoral closeness and voter turnout.
 
 ## Motivation
-Understanding voting behavior is a cornerstone of political science. Debates on when and why people decide to vote have generated an enormous amount of academic attention. Amongst the many possible influences contributing to voter turnout, the closeness of an election is a frequently analyzed aspect (Geys 2006: 647). Despite this, there is disagreement within the literature whether closeness truly does impact voter turnout. Using a relatively new dataset, I aim to answer whether citizens are more likely to vote in closer elections, and in doing so contribute to the ongoing debate on the predictive quality of closeness on voter turnout. Therefore, I attempt to test for the following hypothesis.
+Understanding voter turnout is a cornerstone of political science. Scholars have long debated why people decide to vote, and whether institutional or contextual factors—like compulsory voting, election timing, or media access—affect participation.
 
-H1: The closer an election is, the higher voter turnout will be.
+A frequently studied influence is **electoral closeness**: do citizens turn out in larger numbers when an election is expected to be competitive? While many case studies examine this question, empirical findings remain mixed. Using the new Global Dataset on Turnout, this project asks whether ex-post measures of electoral closeness (victory‐margin) predict higher turnout, thereby contributing to the ongoing debate on whether “closeness” genuinely motivates voters.
+
+**Hypothesis (H1):** The closer an election is, the higher voter turnout will be.
 
 ## Data
-### Global Dataset on Turnout
-**Source**
-Martínez i Coma, F., & Leiva Van De Maele, D. (2023). Global Dataset on Turnout (GD-Turnout). Retrieved from: https://doi.org/10.7910/DVN/NYXHU9
+### Global Dataset on Turnout (GDT)
+
+**Source:**  
+[Martínez i Coma, F., & Leiva Van De Maele, D. (2023). Global Dataset on Turnout (GD-Turnout). Harvard Dataverse.](https://doi.org/10.7910/DVN/NYXHU9)
 
 **Description:**  
-The Global Dataset on Turnout (GDT) dataset contains panel data on all national presidential and parliamentary elections between 1945-2020. The GDT itself does not contain an indicator for election closeness. Instead, the independent variable is determined by taking the margin of victory, which is calculated by subtracting the share of votes the runner-up received from that of the victor. A smaller gap indicates a closer election. This means that this measurement of closeness is determined ex-post, i.e. after the election is already concluded. While this approach is common (Geys 2006: 647), it is not without issue. Ex-post closeness does not indicate the perceived closeness of an election which, which is the theorized explanation for higher turnout. Not only that, but as the actual results are a function of voter turnout, results derived using an ex-post measurement run the risk of being inherently biased. Despite these shortcomings, research has shown that ex-post measurements provide similar results on turnout as ex-ante measurements (Fauvelle-Aymar and Francois 2006). 
+The GDT contains panel data on all national presidential and parliamentary elections worldwide between 1945–2020. Key points:
+- **Turnout**: percentage of votes cast out of total registered voters (`turnoutreg`).  
+- **Closeness**: not provided directly. I compute two versions:
+  1. `closeness` = absolute vote‐count margin (first minus second).  
+  2. `closeness_per` = percentage‐point margin (vote share of winner minus runner‐up).
+  - A smaller value → a closer election (ex-post measure).  
+  - Note: ex-post closeness can be biased (perception vs. actual), but prior work shows ex-post and ex-ante measures yield similar turnout effects (Fauvelle-Aymar & Francois 2006).
 
-Turnout is calculated by the percentage of votes cast in relation to the total number of registered voters. The utlized control variables include compulsory elections, concurrency of elections, and election type  are all measured binarily. 
+- **Control variables** (all binary unless noted):  
+  - `compulsory` (1 if voting is legally compulsory, 0 otherwise)  
+  - `concurrent` (1 if held alongside another national election, 0 otherwise)  
+  - `streltype` (election type: “P” = presidential, “L” = legislative)  
 
-**Preprocessing**
-- Dropped observations where political candidate/party which came in second are recorded as having achieved more votes then first place    candidate/party
-- Created the continous variable  `closness_per`, which indicated the difference in received votes of all registerd voters of a country    between the first and secnd placed candidate/party
-  - 0 if only non‐repressive responses (accommodation or “ignore”) occurred.
-- Removed unused columns. Maintained the following columns for anaylsis: 
-  - country
-  -  year
-  -  turnoutreg (registered turnout percentage)
-  -  closeness (closness of an election as differnce in vote count of two largest candidate/party) (unused in follwing alayisis)
-  -  closeness_per (closness of an election as % differnce in vote share of two largest candidate/party)
-  -  weekday (The name of the day of the week in which the elections are held. From Monday to Sunday)
-  -  streltype (String variable of election type, including presidential (P) and parliamentary (L))
-  -  compulsory (Whether there was compulsory voting or not)
-  -  populationNohl (This variable includes the total population)
-  -  concurrent (Whether the election was concurrent with another election)
-- Manually renaming various country to match county names with other utlized datasets (see below)
-  
+- **Additional covariates**:  
+  - `weekday` (day of week: “Monday”–“Sunday”)  
+  - `populationNohl` (total population, continuous)
+
+**Preprocessing:**  
+- Dropped observations where the runner-up’s vote count exceeds the winner’s (data error).  
+- Created `closeness_per` = (winner_vote_share – runner_up_vote_share).
+  - A smaller value → a closer election (ex-post measure).  
+  - Note: ex-post closeness can be biased (perception vs. actual), but prior work shows ex-post and ex-ante measures yield similar
+    turnout effects (Fauvelle-Aymar & Francois 2006).
+- Kept only these columns for analysis:  
+  - `country`  
+  - `year`  
+  - `turnoutreg`  
+  - `closeness`  
+  - `closeness_per`  
+  - `weekday`  
+  - `streltype`  
+  - `compulsory`  
+  - `populationNohl`  
+  - `concurrent`  
+- Renamed country codes/strings to match the other datasets (Gini, V-Dem) (e.g., “Russian Federation” → “Russia,” etc.).
+
 ### Gini Coefficient Data
-**Source**
-Hasell, J., Arriagada, P., Ortiz-Ospina, E., & Roser, M. (2023). Economic Inequality. OurWorldInData.org. Retrieved from: https://ourworldindata.org/economic-inequality
+
+**Source:**  
+[Hasell, J., Arriagada, P., Ortiz-Ospina, E., & Roser, M. (2023). Economic Inequality. OurWorldInData.org.](https://ourworldindata.org/economic-inequality)
 
 **Description:**  
-Economic inequality in a specific country-year. It is scaled 0-1, with higher values indicating greater inequality.
+Annual Gini coefficient (scaled 0–1) for each country. A higher Gini value indicates greater income inequality.
 
-**Preprocessing**
-- Filtered data to years 1945-2020
-  -  country
-  -  year
-  -  turnoutreg (registered turnout percentage)
-  -  closeness (closness of an election as differnce in vote count of two largest candidate/party) (unused in follwing alayisis)
-  -  closeness_per (closness of an election as % differnce in vote share of two largest candidate/party)
-  -  weekday (The name of the day of the week in which the elections are held. From Monday to Sunday)
-  -  streltype (String variable of election type, including presidential (P) and parliamentary (L))
-  -  compulsory (Whether there was compulsory voting or not)
-  -  populationNohl (This variable includes the total population)
-  -  concurrent (Whether the election was concurrent with another election)
-- Manually renaming various country to match county names with other utlized datasets
+**Preprocessing:**  
+- Filtered years to 1945–2020 (to match GDT span).  
+- Kept only:  
+  - `country`  
+  - `year`  
+  - `gini`  
+- Renamed countries for consistency with GDT and V-Dem.
 
-### Varieties of Democracy
-**Source**
-Coppedge, M., Gerring, J., Knutsen, C. H., Lindberg, S. I., Teorell, J., Altman, D., Bernhard, M., Cornell, A., Fish, M. S., Gastaldi, L., Gjerløw, H., Glynn, A., Good God, A., Grahn, S., Hicken, A., Kinzelbach, K., Krusell, J., Marquardt, K. L., McMann, K., … Ziblatt, D. (2023). V-Dem [Country-Year/Country-Date] Dataset v13. Varieties of Democracy (V-Dem) Project. Retrieved from:  https://doi.org/10.23696/vdemds23
+### Varieties of Democracy (V-Dem)
+**Source:**  
+[Coppedge, M., Gerring, J., Knutsen, C. H., Lindberg, S. I., Teorell, J., Altman, D., … Ziblatt, D. (2023). V-Dem [Country-Year/Country-Date] Dataset v13. Varieties of Democracy Project.](https://doi.org/10.23696/vdemds23)
 
-**Description**
-Country‐level data from 1789 to present. Contains hundreds of indicators on governance, democracy, civil liberties, media freedom, corruption, and more.
+**Description:**  
+Annual country-level democracy indicators dating from 1789. Contains hundreds of variables coded by experts, including electoral and liberal democracy indices.
 
-**Preprocessing**
-- Removed unused columns. Maintained the following columns for anaylsis: 
-  -  country
-  -  year
-  -  v2x_polyarchy (Electoral democracy index)
-- Turned v2x_polyarchy interval scale inot a binary indicator named `democracy`
-- Removed missing values 
-- Manually renaming various country to match county names with other utlized datasets
+**Preprocessing:**  
+- Kept only:  
+  - `country`  
+  - `year`  
+  - `v2x_polyarchy` (Electoral Democracy Index, continuous 0–1)  
+- Created binary indicator `democracy`:  
+  - `1` if `v2x_polyarchy ≥ 0.50` (electoral democracy),  
+  - `0` otherwise.  
+- Dropped missing values in `v2x_polyarchy`.  
+- Renamed country labels for consistency with GDT and Gini.
 
 ### Final Merged Datasets
-**Data without Gini value**
-- **Observations:** 2643 
-- **Countries:** 156 
-- **Features:** 12
 
-**Data with Gini value**
-- **Observations:** 964
-- **Countries:** 116
-- **Features:** 13
+After merging GDT + V-Dem (+ Gini), we end up with two versions:
+
+1. **Without Gini:**  
+   - **Observations:** 2,643 election instances (1945–2020)  
+   - **Countries:** 156  
+
+2. **With Gini:**  
+   - **Observations:** 964 (subset where Gini is available)  
+   - **Countries:** 116  
+
+
 
 ## Methods
-To answer H1, I utilize ordinarily least squares (OLS) methodology, meaning that I assume that the relationship between closeness and turnover is linear.  Results are be considered statistically significant at the 5% level. 
+I estimate the linear effect of electoral closeness on turnout. Each model’s results are considered significant at α = 0.05.
 
-Model 1 is a simple linear regression model, thus regressing turnout only on closeness. It shall be applied to all observations in the GDT. 
+#### Model 1: Pooled OLS (All Countries)
+
 𝑌 = 𝛼 + 𝛽𝑋  + 𝜖
 
 Where:
@@ -94,9 +113,16 @@ Where:
 •	𝛽 is the coefficient for closeness,
 •	𝜖 is the error term.
 
-Model 2 is calculated the same way but is only applied to democracies. Subsequent models are also only applied to democracies. 
+#### Model 2: Pooled OLS (Democracies Only)
+Same as Model 1, but restricted to `democracy` = 1.
 
-Model 3 is a two-way fixed effects model, controlling for both country and year fixed effects. Subsequent models also control for fixed effects.
+
+#### Model 3: Two-Way Fixed Effects (Democracies)
+\[
+  \text{turnoutreg}_{i,t} = \alpha_{i} + \delta_{t} + \beta_{1} \times \text{closeness\_per}_{i,t} + \epsilon_{i,t}
+\]
+- \(\alpha_{i}\): country FE  
+- \(\delta_{t}\): year FE  
 
 𝑌𝑖,𝑡 = 𝛼𝑖 + 𝛿𝑡 + 𝛽1𝑋1𝑖,𝑡 + 𝜖𝑖,𝑡
 
@@ -162,6 +188,10 @@ Second, in such a cross national observational study, it is impossible to accoun
 Shortcomings aside, this analysis has provided evidence that citizens are more likely to vote in close elections, and therefore finds itself in line with the previous findings works such as that of Blais and Dobrzynska (1998) and Cancela and Geys (2016), even if the projected influence of closeness on turnout appears to be small. While more research is needed to explain under which condition closeness may play a greater or lesser role, determining the validity of the association is a necessary and relevant first step.
 
 ## Usage
+
+Data is already preprocessed in the Turning-up-for-the-Races.Rmd file. Preprocessing can be run sepeartly if desired with the Preprocessing.Rmd (Note: V-Dem-CY-Core-v13.csv.zip will need ot be unziped forst)
+
+
 ### 1. Clone the Repository
 
 ```bash
@@ -180,11 +210,19 @@ install.packages(c(
 
 ```
 
-### 3. Render the R Markdown (excludes data cleaning procedure in 
+### 3. Render the R Markdown 
 In R
 ```r
-rmarkdown::render("State_repression_prediction.Rmd")
+rmarkdown::render("Turning-up-for-the-Races.Rmd")
 ```
+
+Or, if preprocessing step should be rerun, run following first
+```r
+rmarkdown::render("Preprocessing.Rmd")
+```
+
+## References
+Fauvelle-Aymar, C., & François, A. (2006). The impact of closeness on turnout: An empirical relation based on a study of a two-round ballot. Public Choice, 127, 461–483.
 
 ## License: All rights reserved
 
