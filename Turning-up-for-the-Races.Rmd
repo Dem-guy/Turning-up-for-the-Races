@@ -1,0 +1,134 @@
+---
+title: "Turning up for the Races: An Exploration of the Relationship between Close Elections and Voter Turnout"
+subtitle: "R Markdown and Replication File"
+author: "18-777-581"
+output:
+  pdf_document: default
+  html_document: default
+date: "Date of submission: 31-01-2024"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+
+```
+
+
+
+## Loading prepared Datasets
+```{r}
+
+final_dem <- read_csv("final_dem.csv")
+final_dem
+
+final_gini <- read_csv("final_gini.csv")
+final_gini
+
+```
+
+
+
+## Model 1 and Figure 1
+```{r}
+# Simple Linear regression for all observations
+model1 <- lm(turnoutreg ~ closeness_per, final_dem)
+
+summary(lm(turnoutreg ~ closeness_per, final_dem))
+
+
+# Plot for simple linear regression for all observations
+final_dem %>% 
+  ggplot(aes(x = closeness_per, y = turnoutreg, color = democracy))+
+  geom_point()+
+  geom_smooth(method = "lm")+
+  labs(title = "Relationship between Closeness and Turnout",
+       subtitle =  "All Oberservations",
+       color = "Democratic")+
+  xlab("Gap between vote share of leading two candidates (%)")+
+  ylab("Turnout (%)")
+
+```
+
+
+
+## Model 2 and Figure 2
+```{r}
+
+# Subset for just Democracies 
+dem_final_dem <- final_dem %>% 
+  filter(democracy == TRUE)
+
+
+# Simple linear regression for democracies 
+model2 <- lm(turnoutreg ~ closeness_per, dem_final_dem)
+
+summary(lm(turnoutreg ~ closeness_per, dem_final_dem))
+
+# Plot Simple linear regression for democracies 
+dem_final_dem %>% 
+  ggplot(aes(x = closeness_per, y = turnoutreg))+
+  geom_point()+
+  geom_smooth(method = "lm")+
+  labs(title = "Relationship between Closeness and Turnout",
+       subtitle =  "Democracies only")+
+  xlab("Gap between vote share of leading two candidates (%)")+
+  ylab("Voter Turnout (%)")
+
+
+```
+
+## Model 3
+```{r}
+
+# Linear regression for democracies
+model3<- lm(turnoutreg ~ closeness_per + country + year, dem_final_dem)
+
+summary(lm(turnoutreg ~ closeness_per + country + year, dem_final_dem))
+
+
+```
+
+## Model 4
+```{r}
+# Multiple Linear Regression with GDT Variables
+model4 <- lm(turnoutreg ~ closeness_per + weekday + concurrent + compulsory
+             + populationNohl + streltype + country + year, dem_final_dem)
+
+summary(lm(turnoutreg ~ closeness_per + weekday + concurrent + compulsory
+           + populationNohl + streltype + country + year, dem_final_dem))
+
+
+```
+
+## Model 5
+```{r}
+
+# Subset for just Democracies 
+dem_final_gini <- final_gini %>% 
+  filter(democracy == TRUE)
+
+
+# Multiple Linear Regression with Gini
+model5 <- lm(turnoutreg ~ closeness_per + concurrent + compulsory + populationNohl + streltype + gini + weekday + country + year, dem_final_gini)
+
+summary(lm(turnoutreg ~ closeness_per + concurrent + compulsory + populationNohl + streltype + gini + weekday + country + year, dem_final_gini))
+
+
+```
+
+##Table 1
+```{r}
+
+stargazer(model1, model2, model3, model4, model5, title = "Regression Results", 
+          dep.var.caption = "Voter Turnout",
+          type = "text", align = TRUE, omit = c("country", "year", "weekday"))
+
+
+```
+
+
+
+
+
